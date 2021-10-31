@@ -78,7 +78,7 @@ void sort_vote()
         for(int j=1;j<=awards;j++)
         {
             bool ki=true;
-            for(int k=2;k<=awards;j++)
+            for(int k=2;k<=awards;k++)
             {
                 if(student[i].voted_num[k]>=student[i].voted_num[k-1])
                 {
