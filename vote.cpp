@@ -4,6 +4,14 @@
 using namespace std;
 map<string,int> student_name_num;
 map<int,string> student_num_name;
+int vote_result_voted[awards+1][student_num+1];
+int vote_result_number[awards+1][student_num+1];
+void swap(int &a,int &b)
+{
+    int t=a;
+    a=b;
+    b=t;
+}
 struct student_information
 {
     int rank[awards+1];
@@ -21,10 +29,6 @@ void init()
         putin_student_information>>student[i].name;
         student_num_name[student[i].number]=student[i].name;
         student_name_num[student[i].name]=student[i].number;   //用map型将学生姓名与学号进行对应
-        for(int j=1;j<=awards;j++)
-        {
-            student[i].rank[j]=student[i].number;
-        }
     }
 }
 void vote()
@@ -32,9 +36,9 @@ void vote()
     int filein_num;
     cout<<"请选择数据输入方式\n";
     cin>>filein_num;
+    ifstream putin_vote("votein.txt");
     for(int i=1;i<=filein_num;i++)
     {
-        ifstream putin_vote("voteinformation.txt");
         for(int j=1;j<=awards;j++)
         {
             int temporary;
@@ -70,26 +74,30 @@ void vote()
             }
         }
     }
+    for(int j=1;j<=awards;j++)
+    {
+        for(int i=1;i<=student_num;i++)
+        {
+            vote_result_voted[j][i]=student[i].voted_num[j];
+            vote_result_number[j][i]=i;
+        }
+    }
 }
 void sort_vote()
 {
-    for(int i=1;i<=student_num;i++)
+    for(int i=1;i<=awards;i++)
     {
-        for(int j=1;j<=awards;j++)
+        for(int j=1;j<=student_num;j++)
         {
             bool ki=true;
-            for(int k=2;k<=awards;k++)
+            for(int k=2;k<=student_num;k++)
             {
-                if(student[i].voted_num[k]>=student[i].voted_num[k-1])
+                if(vote_result_voted[i][k-1]<=vote_result_voted[i][k])
                 {
-                    swap(student[i].voted_num[k],student[i].voted_num[k-1]);
-                    swap(student[i].rank[k],student[i].rank[k-1]);
+                    swap(vote_result_voted[i][k-1],vote_result_voted[i][k]);
+                    swap(vote_result_number[i][k-1],vote_result_number[i][k]);
                     ki=false;
                 }
-            }
-            if(ki)
-            {
-                break;
             }
         }
     }
@@ -99,9 +107,11 @@ void put_out()
     ofstream putout("putout.txt");
     for(int j=1;j<=awards;j++)
     {
+        putout<<"这是第"<<j<<"个投票项目\n";
         for(int i=1;i<=student_num;i++)
         {
-            putout<<student[i].rank[j]<<" "<<student[i].voted_num[j]<<"     ";
+            putout<<"第"<<i<<"名是";
+            putout<<student_num_name[vote_result_number[j][i]]<<"，被投了"<<vote_result_voted[j][i]<<"票   ";
         }
         putout<<endl;
     }
